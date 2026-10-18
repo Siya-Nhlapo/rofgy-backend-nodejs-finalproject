@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,7 +13,7 @@ const SECRET_KEY = 'your_secret_key';
 
 mongoose.set('strictQuery', false);
 
-const uri =  "mongodb://root:<replace password>@localhost:27017";
+const uri =  process.env.MONGODB_URI_HOME;
 mongoose.connect(uri,{'dbName':'SocialDB'});
 
 const User = mongoose.model('User', { username: String, email: String, password: String });
@@ -22,7 +25,27 @@ app.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: true, co
 
 
 // Insert your authenticateJWT Function code here.
+function authenticateJWT(req, res, next) {
+    // Get token from session
+    const token = req.session.token;
 
+    // If no token, return 401 Unauthorized
+    if(!token) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        // Verify token
+        const decoded = jwt.verify(token, SECRET_KEY);
+
+        // Attach user data to request object
+        req.user = decoded;
+
+        // Continue to the next middleware
+        next();
+    } catch (error) {
+        // If invalid token, return 401
+        return res.status(401).json({ message: 'Invalid token' });
+    }
+}
 // Insert your requireAuth Function code here.
 
 // Insert your routing HTML code here.
