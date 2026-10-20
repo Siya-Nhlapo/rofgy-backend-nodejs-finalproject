@@ -66,7 +66,7 @@ function requireAuth(req, res, next) {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'))); // Home page route
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html'))); // Registration page route
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html'))); // Login page route
-app.get('/posts', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'post.html'))); // Post creation page route (protected)
+app.get('/post', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'post.html'))); // Post creation page route (protected)
 app.get('/index', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'), { username: req.user.username })); // Main page route (protected) and passing username to the template
 
 // Insert your user registration code here.
@@ -89,7 +89,8 @@ app.post('/register', async (req, res) => {
         req.session.token = token; // Store token in session
 
         // Respond with success message
-        res.send({"message": `The user ${username} has been added successfully!`}); // Send success response
+        // res.send({"message": `The user ${username} has been added successfully!`}); // Send success response
+        res.redirect(`/index?username=${newUser.username}`); // Redirect to main page with username as query parameter
     }
     catch (error) {
         console.error(error); // Log error to console
@@ -113,7 +114,7 @@ app.post('/login', async (req, res) => {
             req.session.token = token; // Store token in session
 
             // Respond with success message
-            res.send({"message": `${user.username} has logged in successfully!`}); // Send success response
+            res.redirect(`/index?username=${user.username}`); // Redirect to main page with username as query parameter
         }
     }
     catch (error) {
