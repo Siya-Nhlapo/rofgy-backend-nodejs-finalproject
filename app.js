@@ -89,7 +89,7 @@ app.post('/register', async (req, res) => {
         req.session.token = token; // Store token in session
 
         // Respond with success message
-        // res.send({"message": `The user ${username} has been added successfully!`}); // Send success response
+        res.send({"message": `The user ${username} has been added successfully!`}); // Send success response
         res.redirect(`/index?username=${newUser.username}`); // Redirect to main page with username as query parameter
     }
     catch (error) {
